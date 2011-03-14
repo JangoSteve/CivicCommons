@@ -329,122 +329,73 @@ jQuery(function ($) {
       selectResponseFromHash();
     });
 
-  	$('a.conversation-responses')
-  	  .changeTextOnLoading({
-        loadText: "Loading responses...",
-        completeText: "Hide responses"
+    $('.delete-conversation-action')
+      .changeTextOnLoading({
+        loadText: "Deleting..."
       })
-  	  .live("ajax:success", function(evt, data, status, xhr){
-  	    var clicked = this,
-  	        target = this.getAttribute("data-target"),
-  	        tabStrip = target+" .tab-strip",
-  	        form = tabStrip+" form";
-  	    
-  	    // turn button into a toggle to hide/show what gets loaded so that subsequent clicks to redo the ajax call
-        $(clicked).applyToggleToElement(target, "Hide responses");
-        $(target).hide().html(xhr.responseText).slideDown().find('.rate-form-container').hide(); // insert content
+      .live("ajax:success", function(evt, data, status, xhr){
+        var clicked = this,
+            target = this.getAttribute("data-target");
+        $(target).hide('puff', 1000);
       })
       .liveAlertOnAjaxFailure();
-      
-      $('.delete-conversation-action')
-        .changeTextOnLoading({
-          loadText: "Deleting..."
-        })
-        .live("ajax:success", function(evt, data, status, xhr){
-          var clicked = this,
-    	        target = this.getAttribute("data-target");
-          $(target).hide('puff', 1000);
-        })
-        .liveAlertOnAjaxFailure();
-      
-      $('.edit-conversation-action')
-        .changeTextOnLoading()
-        .live("ajax:success", function(evt, data, status, xhr){
-          var clicked = this;
-    	        target = this.getAttribute("data-target");
-    	        form = target + ' form';
-          $(target).html(xhr.responseText);
-          $(form)
-            .maskOnSubmit()
-            .bind("ajax:success", function(evt, data, status, xhr){
-              if( $(this).data('remotipartSubmitted') == 'script' ) {
-                var responseNode = $($("<div />").html(xhr.responseText).text()); // this is needed to properly unescape the HTML returned from doing the jquery.form plugin's ajaxSubmit for some reason
-              } else {
-                var responseNode = $(xhr.responseText);            
-              }
-              contributionContent = $(responseNode).html();
-              $(target).html(contributionContent).find('.rate-form-container').hide();
-            })
-            .bindValidationErrorOnAjaxFailure();
-        })
-        .liveAlertOnAjaxFailure();
-      
-      $('.top-node-conversation-action,.conversation-action').live('click', function(e){
-        var $this = $(this);
-        $.colorbox({
-          transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
-          href: $this.attr('href'),
-          width: '600px',
-          height: '340px',
-          onComplete: function(){
-            var clicked = $this,
-                divId = $(clicked).attr('href').match(/div_id=([^&]+)/)[1],
-                tabStrip = '.tab-strip#' + divId,
-                form = tabStrip + ' form';
-            
-            $(tabStrip).applyEasyTabsToTabStrip();
-            $(form).bindContributionFormEvents(clicked,tabStrip);
-          },
-          opacity: 0.6
-          //scrolling: false
-        });
-        e.preventDefault();
-      });
-      
-      $('.rate-form-container').hide();
-      $('.rate-comment')
-        .live("click", function(e){
-          $(this.getAttribute("data-target")).toggle();
-          e.preventDefault();
-        });
-      
-      $('.rate-form > form')
-        .live("ajax:loading", function(){
-          $(this).closest('.convo-utility').mask("Loading...");
-        })
-        .live("ajax:complete", function(){
-          $(this).closest('.convo-utility').unmask();
-        })
-        .live("ajax:success", function(evt, data, status, xhr){
-          $(this).closest('.convo-utility').unmask();
-          $(this).closest('.rating-container').html(xhr.responseText);
-        })
-        .live("ajax:failure", function(evt, xhr, status, error){
-          try{
-            var errors = $.parseJSON(xhr.responseText);
-          }catch(err){
-            var errors = {msg: "Please reload the page and try again"};
-          }
-          var errorString = "There were errors with the rating:\n<ul>";
-          for(error in errors){
-            errorString += "<li>" + error + ' ' + errors[error] + "</li> ";
-          }
-          errorString += "</ul>"
-          $(this).closest(".rate-form").siblings(".validation-error").html(errorString);
-        });
-        
-        $('a[data-colorbox-iframe]').live('click', function(e){
-          $.colorbox({ 
-            transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
-            href: $(this).attr('href'), 
-            iframe: true, 
-            width: '75%', 
-            height: '75%',
-            onClosed: function(){
-              alert('And this is where we could reload this section of the conversation page!');
+    
+    $('.edit-conversation-action')
+      .changeTextOnLoading()
+      .live("ajax:success", function(evt, data, status, xhr){
+        var clicked = this;
+            target = this.getAttribute("data-target");
+            form = target + ' form';
+        $(target).html(xhr.responseText);
+        $(form)
+          .maskOnSubmit()
+          .bind("ajax:success", function(evt, data, status, xhr){
+            if( $(this).data('remotipartSubmitted') == 'script' ) {
+              var responseNode = $($("<div />").html(xhr.responseText).text()); // this is needed to properly unescape the HTML returned from doing the jquery.form plugin's ajaxSubmit for some reason
+            } else {
+              var responseNode = $(xhr.responseText);            
             }
-           });
-          e.preventDefault();
-        });
+            contributionContent = $(responseNode).html();
+            $(target).html(contributionContent).find('.rate-form-container').hide();
+          })
+          .bindValidationErrorOnAjaxFailure();
+      })
+      .liveAlertOnAjaxFailure();
+    
+    $('.top-node-conversation-action,.conversation-action').live('click', function(e){
+      var $this = $(this);
+      $.colorbox({
+        transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
+        href: $this.attr('href'),
+        width: '600px',
+        height: '340px',
+        onComplete: function(){
+          var clicked = $this,
+              divId = $(clicked).attr('href').match(/div_id=([^&]+)/)[1],
+              tabStrip = '.tab-strip#' + divId,
+              form = tabStrip + ' form';
+          
+          $(tabStrip).applyEasyTabsToTabStrip();
+          $(form).bindContributionFormEvents(clicked,tabStrip);
+        },
+        opacity: 0.6
+        //scrolling: false
+      });
+      e.preventDefault();
+    });
+    
+    $('a[data-colorbox-iframe]').live('click', function(e){
+      $.colorbox({ 
+        transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
+        href: $(this).attr('href'), 
+        iframe: true, 
+        width: '75%', 
+        height: '75%',
+        onClosed: function(){
+          alert('And this is where we could reload this section of the conversation page!');
+        }
+       });
+      e.preventDefault();
+    });
   });
 });

@@ -440,7 +440,7 @@ color: #444;
 outline: none;
 }
 a:hover {color: #2c87b7;}
-a.button, .button, a.off_button, .off_button{
+a.button, .button, a.off_button, .off_button, .convo-utility a.button {
 background: #cbe27c url(/images/glass_btn.png) repeat-x 0 50%;
 border: 1px solid #999;
 color: #444;
@@ -901,13 +901,13 @@ div.convo-utility p {
 line-height: 2.1em;
 margin: 0;
 }
-div.convo-utility p.respond-link, div.productive p.prod-quest {
+div.convo-utility .ratings, div.productive p.prod-quest {
 float: left;
 width: 35%;
 }
-div.convo-utility p.respond-link, div.convo-utility.response p.respond-link {
+div.convo-utility .ratings, div.convo-utility.response .ratings {
 }
-div.convo-utility.response p.respond-link {
+div.convo-utility.response .ratings {
 }
 div.convo-utility p.respond {
 float: right;

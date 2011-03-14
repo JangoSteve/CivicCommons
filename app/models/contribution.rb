@@ -26,6 +26,12 @@ class Contribution < ActiveRecord::Base
   scope :unconfirmed, where(:confirmed => false)
   # Scope for contributions that are still editable, i.e. no descendants and less than 30 minutes old
   scope :editable, where(["#{quoted_table_name}.created_at >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 30 MINUTE)"])
+  scope :for_conversation, lambda { |convo|
+    confirmed.
+      where(:conversation_id => convo.id).
+      includes([:person]).
+      order('contributions.created_at ASC')
+  }
 
   after_initialize :set_confirmed, :if => :new_record? # sets confirmed to false by default when object created
   before_validation :set_person_from_item, :if => :person_blank?

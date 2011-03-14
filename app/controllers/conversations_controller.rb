@@ -25,10 +25,10 @@ class ConversationsController < ApplicationController
   def show
     @conversation = Conversation.includes(:issues).find(params[:id])
     @conversation.visit!((current_person.nil? ? nil : current_person.id))
-    @top_level_contributions = TopLevelContribution.where(:conversation_id => @conversation.id).includes([:person]).order('created_at ASC')
+    @contributions = Contribution.for_conversation(@conversation)
+    @top_level_contributions = @contributions.select{ |c| c.is_a?(TopLevelContribution) }
     # grab all direct contributions to conversation that aren't TLC
-    @conversation_contributions = Contribution.not_top_level.confirmed.without_parent.where(:conversation_id => @conversation.id).includes([:person]).order('created_at ASC')
-    #@contributions = Contribution.confirmed.descendants_of(@conversation_contributions).includes([:person])
+    @conversation_contributions = @contributions.select{ |c| !c.is_a?(TopLevelContribution) && c.parent_id.nil? }
 
     @top_level_contribution = Contribution.new # for conversation comment form
     @tlc_participants = @top_level_contributions.collect{ |tlc| tlc.owner }
@@ -42,7 +42,7 @@ class ConversationsController < ApplicationController
 
   def node_conversation
     @contribution = Contribution.find(params[:id])
-    @contributions = @contribution.children.confirmed.includes(:person)
+    @contributions = @contribution.descendants.confirmed.includes(:person)
     @contribution.visit!((current_person.nil? ? nil : current_person.id))
 
     respond_to do |format|
