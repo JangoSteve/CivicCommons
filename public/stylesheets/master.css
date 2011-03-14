@@ -893,16 +893,9 @@ border-radius: 8px;
 .edit-contribution {float: right;}
 .edit-contribution a {margin-left: 15px;}
 div.convo-utility {
-padding: 3px 0 2px;
 position:relative;
 }
 div.convo-utility.response {
-background: #e6e6e6 url(../images/response_bar_bg.gif) repeat-x top;
-border: 1px solid #ced1d6;
-padding: 3px 6px 2px;
--webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
--moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 div.convo-utility p {
 line-height: 2.1em;
@@ -913,22 +906,14 @@ float: left;
 width: 35%;
 }
 div.convo-utility p.respond-link, div.convo-utility.response p.respond-link {
-background: url(/images/chat-bubble-gray.png) no-repeat 0 50%;
-padding-left: 30px;
 }
-div.convo-utility.response p.respond-link {background-image: url(/images/chat-bubble-light.png);}
-div.convo-utility p.respond, div.productive p.rating-buttons {
+div.convo-utility.response p.respond-link {
+}
+div.convo-utility p.respond {
 float: right;
 text-align: right;
 width: 40%;
 }
-.rate-form-container {padding: 2em 0 1em;}
-.rate-form {
-float: right;
-height: 1em;
-}
-.rate-form form {display: inline-block;}
-.rate-form form .button {margin: 0;}
 html.js div.productive, html.js div.response-block {display: none;}
 div.productive {
 background: #d6d6d6 url(../images/productivity_bg.gif) repeat-x top;
