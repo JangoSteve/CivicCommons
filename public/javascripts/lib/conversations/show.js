@@ -1,4 +1,4 @@
-jQuery(function ($) {
+(function ($) {
   $.fn.extend({
     updateConversationButtonText: function(){
       var el = this;
@@ -268,134 +268,137 @@ jQuery(function ($) {
 
   });
   
-  $(document).ready(function() {
-    selectResponseFromHash = function(){
-      var hash = window.location.hash.match(/^#node-([\d]+)/);
+  selectResponseFromHash = function(){
+    var hash = window.location.hash.match(/^#node-([\d]+)/);
 
-      if ( hash && hash[1] ){
-        var responseId = hash[1],
-            $onPage = $('#show-contribution-' + responseId);
+    if ( hash && hash[1] ){
+      var responseId = hash[1],
+          $onPage = $('#show-contribution-' + responseId);
 
-        // Permalink to contribution already on page (e.g. TopLevelContribution)
-        if ( $onPage.size() > 0 ) {
-          return $onPage.scrollTo();
-        } else {
-          $('.feature-mast').mask('Loading response...');
-          $.ajax({
-            url: 'node_permalink/' + responseId,
-            dataType: 'js',
-            type: 'GET',
-            complete: function(){
-              $('.feature-mast').unmask();
-            },
-            success: function (data, status, xhr) {
-              eval(xhr.responseText);
+      // Permalink to contribution already on page (e.g. TopLevelContribution)
+      if ( $onPage.size() > 0 ) {
+        return $onPage.scrollTo();
+      } else {
+        $('.feature-mast').mask('Loading response...');
+        $.ajax({
+          url: 'node_permalink/' + responseId,
+          dataType: 'js',
+          type: 'GET',
+          complete: function(){
+            $('.feature-mast').unmask();
+          },
+          success: function (data, status, xhr) {
+            eval(xhr.responseText);
 
-              // Give enough time for target node to append to DOM
-              setTimeout( function(){ 
-                var $target = $('#show-contribution-' + responseId);
+            // Give enough time for target node to append to DOM
+            setTimeout( function(){ 
+              var $target = $('#show-contribution-' + responseId);
 
-                // Change all parent "x Responses" buttons to say "View all x Responses"
-                // to make it clear that the thread is only partially expanded to view
-                // the permalinked response.
-                $target.parents('.contribution-container').each(function(){
-                  $(this).find('a.conversation-responses').first().text( function(){
-                    var $this = $(this);
-                    if ( /[\d]+ responses/i.test($this.text()) ) {
-                      // $this.text( $this.text().replace(/([\d]+ responses)/i, "View $1") );
-                    } else {
-                      $this.data('origText', $this.text()).text("Hide response").applyToggleToElement($target, "Hide Response");
-                    }
-                  });
+              // Change all parent "x Responses" buttons to say "View all x Responses"
+              // to make it clear that the thread is only partially expanded to view
+              // the permalinked response.
+              $target.parents('.contribution-container').each(function(){
+                $(this).find('a.conversation-responses').first().text( function(){
+                  var $this = $(this);
+                  if ( /[\d]+ responses/i.test($this.text()) ) {
+                    // $this.text( $this.text().replace(/([\d]+ responses)/i, "View $1") );
+                  } else {
+                    $this.data('origText', $this.text()).text("Hide response").applyToggleToElement($target, "Hide Response");
+                  }
                 });
+              });
 
-                $target.scrollTo();
+              $target.scrollTo();
 
-              }, 250);
-            }
-          });
-        }
+            }, 250);
+          }
+        });
       }
     }
-    
-    resizeColorbox = function(){
-      $.colorbox.resize({
-        innerHeight: $('#cboxLoadedContent').children().first().outerHeight() + 30
-      });
-    }
-    
+  }
+  
+  resizeColorbox = function(){
+    $.colorbox.resize({
+      innerHeight: $('#cboxLoadedContent').children().first().outerHeight() + 30
+    });
+  }
+  
+  $('.delete-conversation-action')
+    .changeTextOnLoading({
+      loadText: "Deleting..."
+    })
+    .live("ajax:success", function(evt, data, status, xhr){
+      var clicked = this,
+          target = this.getAttribute("data-target");
+      $(target).hide('puff', 1000);
+    })
+    .liveAlertOnAjaxFailure();
+  
+  $('.edit-conversation-action')
+    .changeTextOnLoading()
+    .live("ajax:success", function(evt, data, status, xhr){
+      var clicked = this;
+          target = this.getAttribute("data-target");
+          form = target + ' form';
+      $(target).html(xhr.responseText);
+      $(form)
+        .maskOnSubmit()
+        .bind("ajax:success", function(evt, data, status, xhr){
+          if( $(this).data('remotipartSubmitted') == 'script' ) {
+            var responseNode = $($("<div />").html(xhr.responseText).text()); // this is needed to properly unescape the HTML returned from doing the jquery.form plugin's ajaxSubmit for some reason
+          } else {
+            var responseNode = $(xhr.responseText);            
+          }
+          contributionContent = $(responseNode).html();
+          $(target).html(contributionContent).find('.rate-form-container').hide();
+        })
+        .bindValidationErrorOnAjaxFailure();
+    })
+    .liveAlertOnAjaxFailure();
+  
+  $('.top-node-conversation-action,.conversation-action').live('click', function(e){
+    var $this = $(this);
+    $.colorbox({
+      transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
+      href: $this.attr('href'),
+      width: '600px',
+      height: '340px',
+      onComplete: function(){
+        var clicked = $this,
+            divId = $(clicked).attr('href').match(/div_id=([^&]+)/)[1],
+            tabStrip = '.tab-strip#' + divId,
+            form = tabStrip + ' form';
+        
+        $(tabStrip).applyEasyTabsToTabStrip();
+        $(form).bindContributionFormEvents(clicked,tabStrip);
+      },
+      opacity: 0.6
+      //scrolling: false
+    });
+    e.preventDefault();
+  });
+  
+  $('a[data-colorbox-iframe]').live('click', function(e){
+    $.colorbox({ 
+      transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
+      href: $(this).attr('href'), 
+      iframe: true, 
+      width: '75%', 
+      height: '75%',
+      onClosed: function(){
+        alert('And this is where we could reload this section of the conversation page!');
+      }
+     });
+    e.preventDefault();
+  });
+
+  $(document).ready(function() {
+
     selectResponseFromHash();
     $(window).hashchange( function(){
       selectResponseFromHash();
     });
 
-    $('.delete-conversation-action')
-      .changeTextOnLoading({
-        loadText: "Deleting..."
-      })
-      .live("ajax:success", function(evt, data, status, xhr){
-        var clicked = this,
-            target = this.getAttribute("data-target");
-        $(target).hide('puff', 1000);
-      })
-      .liveAlertOnAjaxFailure();
-    
-    $('.edit-conversation-action')
-      .changeTextOnLoading()
-      .live("ajax:success", function(evt, data, status, xhr){
-        var clicked = this;
-            target = this.getAttribute("data-target");
-            form = target + ' form';
-        $(target).html(xhr.responseText);
-        $(form)
-          .maskOnSubmit()
-          .bind("ajax:success", function(evt, data, status, xhr){
-            if( $(this).data('remotipartSubmitted') == 'script' ) {
-              var responseNode = $($("<div />").html(xhr.responseText).text()); // this is needed to properly unescape the HTML returned from doing the jquery.form plugin's ajaxSubmit for some reason
-            } else {
-              var responseNode = $(xhr.responseText);            
-            }
-            contributionContent = $(responseNode).html();
-            $(target).html(contributionContent).find('.rate-form-container').hide();
-          })
-          .bindValidationErrorOnAjaxFailure();
-      })
-      .liveAlertOnAjaxFailure();
-    
-    $('.top-node-conversation-action,.conversation-action').live('click', function(e){
-      var $this = $(this);
-      $.colorbox({
-        transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
-        href: $this.attr('href'),
-        width: '600px',
-        height: '340px',
-        onComplete: function(){
-          var clicked = $this,
-              divId = $(clicked).attr('href').match(/div_id=([^&]+)/)[1],
-              tabStrip = '.tab-strip#' + divId,
-              form = tabStrip + ' form';
-          
-          $(tabStrip).applyEasyTabsToTabStrip();
-          $(form).bindContributionFormEvents(clicked,tabStrip);
-        },
-        opacity: 0.6
-        //scrolling: false
-      });
-      e.preventDefault();
-    });
-    
-    $('a[data-colorbox-iframe]').live('click', function(e){
-      $.colorbox({ 
-        transition: 'fade', // needed to fix colorbox bug with jquery 1.4.4
-        href: $(this).attr('href'), 
-        iframe: true, 
-        width: '75%', 
-        height: '75%',
-        onClosed: function(){
-          alert('And this is where we could reload this section of the conversation page!');
-        }
-       });
-      e.preventDefault();
-    });
   });
-});
+
+})(jQuery);
