@@ -44,6 +44,10 @@ end
 
 group :test do
   gem "rack-test", :git => 'git://github.com/econsultancy/rack-test.git', :branch => 'econsultancy-20110119'
+  gem 'autotest'
+  gem 'autotest-rails'
+  gem 'autotest-growl'
+  gem 'autotest-fsevent'
   gem 'cucumber', '~>0.10.0'
   gem "factory_girl_rails", '~>1.0.1'
   gem "ruby-debug19"
