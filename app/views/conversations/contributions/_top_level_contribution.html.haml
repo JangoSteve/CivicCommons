@@ -1,5 +1,5 @@
 - embed = '<object type="application/x-shockwave-flash" align="middle" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="320" height="205" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" pluginspage="http://www.adobe.com/go/getflashplayer" id="WetokuPlayer" name="WetokuPlayer"><param name="movie" value="http://wetoku.com/player/vod/10246" /><param name="allowScriptAccess" value="always" /><param name="menu" value="false"/><param name="allowFullScreen" value="true" /><param name="wmode" value="transparent" /><param name="flashvars" value="vid=danmoulthrop.2Fg/8a4db83c01981a704993b691010feb3cce74ee4a" /><embed src="http://wetoku.com/player/vod/10246" width="320" height="205" flashvars="vid=danmoulthrop.2Fg/8a4db83c01981a704993b691010feb3cce74ee4a" allowScriptAccess="always" type="application/x-shockwave-flash" allowFullScreen="true" wmode="transparent" menu="false"></embed></object>'
-%li.offset-1{:id => "show-contribution-#{contribution.id}"}
+%li.offset-1.top-level-contribution{:id => "show-contribution-#{contribution.id}"}
   %div.top-level-contribution.contribution-container
     %a{:name=>"contribution-#{contribution.id}"}
     - if contribution
@@ -11,8 +11,8 @@
           =auto_link(simple_format(contribution.content, {}, {:sanitize => false}))
         %div{:class => "convo-utility #{contribution.descendants_count > 0 ? 'response' : 'no-response'}"}
           .respond-container
-            %p.respond
-              = link_to( "Respond to #{contribution.person.first_name}", {:action => "new_node_contribution", :contribution_id => contribution.id, :id => contribution.conversation_id, :div_id => "contribution-#{contribution.id}"}, :class => "text conversation-action top-level-contribution-action-button button", :id => "action-link-#{contribution.id}", :title => "Leave a comment here", 'data-target' => "#action-div-#{contribution.id}")
+            %span.respond
+              = link_to( "Respond to #{contribution.person.first_name}", {:action => "new_node_contribution", :contribution_id => contribution.id, :id => contribution.conversation_id, :div_id => "contribution-#{contribution.id}"}, :class => "text conversation-action top-level-contribution-action-button rating-button", :id => "action-link-#{contribution.id}", :title => "Leave a comment here", 'data-target' => "#action-div-#{contribution.id}")
         %ol.conversations.divided.thread-list
           .top-level-contribution-action(id="action-div-#{contribution.id}")
           .contribution-thread-div(id="thread-div-#{contribution.id}")

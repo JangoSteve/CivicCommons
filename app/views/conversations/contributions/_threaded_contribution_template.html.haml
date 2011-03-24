@@ -1,26 +1,25 @@
 %li.offset-1{:id => "show-contribution-#{contribution.id}"}
   %a{:name=>"contribution-#{contribution.id}"}
-  %div.contribution-container
+  %div.contribution-container.collapsed
     - if contribution
       .callout
         - unless contribution.person.nil?
           = contribution_profile(contribution.person).html_safe
       %div.article.comment
         %a{:name=>"#post#{contribution.id}"}
-        %p
-          - if contribution.editable_by?(current_person)
-            .edit-contribution
-              = link_to("Edit", {:controller => 'conversations', :action => 'edit_node_contribution', :div_id => "show-contribution-#{contribution.id}", :contribution_id => contribution.id}, :remote => true, :method => :get, :class => "edit-conversation-action", :id => "edit-#{contribution.id}", 'data-target' => "#show-contribution-#{contribution.id}")
-              = link_to("Delete", contribution_path(contribution), :remote => true, :method => :delete, :confirm => "Are you sure you want to delete this response? This cannot be undone.", :class => "delete-conversation-action", 'data-target' => "#show-contribution-#{contribution.id}")
+        .edit-contribution
           - if current_person && current_person.admin?
             = link_to "Moderate", moderate_contribution_path(contribution), :confirm => "Whoa there Tiger!  This will remove the contribution and all the nested responses.  Are you sure you want to do this?", :class => 'moderate', :method => 'delete'
+          - if contribution.editable_by?(current_person)
+            = link_to("Edit", {:controller => 'conversations', :action => 'edit_node_contribution', :div_id => "show-contribution-#{contribution.id}", :contribution_id => contribution.id}, :remote => true, :method => :get, :class => "edit-conversation-action", :id => "edit-#{contribution.id}", 'data-target' => "#show-contribution-#{contribution.id}")
+            = link_to("Delete", contribution_path(contribution), :remote => true, :method => :delete, :confirm => "Are you sure you want to delete this response? This cannot be undone.", :class => "delete-conversation-action", 'data-target' => "#show-contribution-#{contribution.id}")
         = render(:partial => "conversations/contributions/#{contribution.type.underscore}", :locals => {:contribution => contribution})
         - if contribution.confirmed # if not confirmed, this is just a preview
           %div{:class => "convo-utility #{contribution.descendants_count > 0 ? 'response' : 'no-response'}"}
             .ratings
             .respond-container
-              %p.respond
-                = link_to("Respond#{' to ' + contribution.person.first_name if contribution.person}", {:action => "new_node_contribution", :contribution_id => contribution.id, :id => contribution.conversation_id, :div_id => "contribution-#{contribution.id}"}, :class => "text conversation-action button", :id => "action-link-#{contribution.id}", :title => "Leave a comment here", 'data-target' => "#action-div-#{contribution.id}")
+              %span.respond
+                = link_to("Respond#{' to ' + contribution.person.first_name if contribution.person}", {:action => "new_node_contribution", :contribution_id => contribution.id, :id => contribution.conversation_id, :div_id => "contribution-#{contribution.id}"}, :class => "text conversation-action rating-button", :id => "action-link-#{contribution.id}", :title => "Leave a comment here", 'data-target' => "#action-div-#{contribution.id}")
           %ol.conversations.divided.thread-list
             .comment-contribution-action(id="action-div-#{contribution.id}")
             .contribution-thread-div(id="thread-div-#{contribution.id}")
