@@ -1,4 +1,6 @@
 class Rating < ActiveRecord::Base
+  include TopItemable
+
   belongs_to :person # who made this rating
   belongs_to :contribution
   belongs_to :rating_descriptor

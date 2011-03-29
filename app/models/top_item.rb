@@ -3,7 +3,6 @@ class TopItem < ActiveRecord::Base
   belongs_to :person
 
   before_create :set_item_created_at
-  before_create :set_item_recent_rating, :if => :item_rateable?
   before_create :set_item_recent_visits, :if => :item_visitable?
 
   #scope :with_items_and_associations, includes(:item, {:item => :person}, {:item => :conversation}, {:item => :issue})
@@ -142,15 +141,15 @@ class TopItem < ActiveRecord::Base
     # At this point, we'd see:
     # sql_builder.to_sql
     # #=>
-    # SELECT  FROM `top_items` 
-    # LEFT OUTER JOIN `contributions` 
-    #   ON `top_items`.`item_id` = `contributions`.`id` 
-    #   AND `top_items`.`item_type` = 'Contribution' 
-    #   AND `contributions`.`owner` IS NOT NULL 
-    # LEFT OUTER JOIN `conversations` 
-    #   ON `top_items`.`item_id` = `conversations`.`id` 
-    #   AND `top_items`.`item_type` = 'Conversation' 
-    #   AND `conversations`.`owner` IS NOT NULL 
+    # SELECT  FROM `top_items`
+    # LEFT OUTER JOIN `contributions`
+    #   ON `top_items`.`item_id` = `contributions`.`id`
+    #   AND `top_items`.`item_type` = 'Contribution'
+    #   AND `contributions`.`owner` IS NOT NULL
+    # LEFT OUTER JOIN `conversations`
+    #   ON `top_items`.`item_id` = `conversations`.`id`
+    #   AND `top_items`.`item_type` = 'Conversation'
+    #   AND `conversations`.`owner` IS NOT NULL
     # WHERE ((`contributions`.`owner` = 35) OR (`conversations`.`owner` = 35))
 
     #associated_items = TopItem.find_by_sql( top_items.to_sql )
@@ -166,37 +165,25 @@ class TopItem < ActiveRecord::Base
     #p top_items.to_sql
     return all_for_items
   end
-  
+
   def self.newest_items(limit=10)
     self.order("item_created_at DESC").limit(limit)
   end
-  
-  def TopItem.highest_rated(limit=10)
-    self.order("recent_rating DESC").limit(limit)
-  end
-  
+
   def TopItem.most_visited(limit=10)
     self.order("recent_visits DESC").limit(limit)
   end
-  
+
   protected
-  
-  def item_rateable?
-    self.item.respond_to?(:recent_rating)
-  end
-  
+
   def item_visitable?
     self.item.respond_to?(:recent_visits)
   end
-  
+
   def set_item_created_at
     self.item_created_at = self.item.created_at
   end
-  
-  def set_item_recent_rating
-    self.recent_rating = self.item.recent_rating
-  end
-  
+
   def set_item_recent_visits
     self.recent_visits = self.item.recent_visits
   end

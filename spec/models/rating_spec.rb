@@ -29,11 +29,11 @@ describe Rating do
     end
 
     it "when using a descriptor object" do
-     Rating.descriptor_total_for_contribution(@contribution, @descriptor).should == 2
+      Rating.descriptor_total_for_contribution(@contribution, @descriptor).should == 2
     end
 
     it "when there are no ratings for a descriptor" do
-     Rating.descriptor_total_for_contribution(@contribution, "Junk").should == nil
+      Rating.descriptor_total_for_contribution(@contribution, "Junk").should == nil
     end
   end
 
@@ -58,7 +58,7 @@ describe Rating do
     end
 
     it "when using a descriptor object" do
-     Rating.person_ratings_for_contribution_and_descriptor(@current_person, @contribution, @descriptor).should == 1
+      Rating.person_ratings_for_contribution_and_descriptor(@current_person, @contribution, @descriptor).should == 1
     end
 
     it "when there are no ratings for a descriptor" do
@@ -66,4 +66,18 @@ describe Rating do
     end
   end
 
+  context "topitemable" do
+    # Make Rating topitemable (TopItemableSpec)
+    # Rating shows up in recent activety stream
+    # TopItem.for(:rating) make it work...
+  end
+
 end
+
+
+
+
+
+
+
+

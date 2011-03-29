@@ -37,45 +37,6 @@ describe TopItem, "when retrieving the top items by date" do
 
 end
 
-describe TopItem, "when retrieving the top items by rating" do
-  before(:each) do
-    @ten_rating_conversation = Factory.create(:conversation, {:recent_rating=>10})
-    @five_rating_conversation = Factory.create(:conversation, {:recent_rating=>5})
-    @one_rating_conversation = Factory.create(:conversation, {:recent_rating=>1})
-    Conversation.stub(:get_top_rated).and_return([@ten_rating_conversation, @five_rating_conversation, @one_rating_conversation])
-
-    @ten_rating_issue = Factory.create(:issue, {:recent_rating=>10})
-    @five_rating_issue = Factory.create(:issue, {:recent_rating=>5})
-    @one_rating_issue = Factory.create(:issue, {:recent_rating=>1})
-    Issue.stub(:get_top_rated).and_return([@ten_rating_issue, @five_rating_issue, @one_rating_issue])
-
-    @ten_rating_contribution = Factory.create(:contribution, {:recent_rating=>10})
-    @five_rating_contribution = Factory.create(:contribution, {:recent_rating=>5})
-    @one_rating_contribution = Factory.create(:contribution, {:recent_rating=>1})
-    Comment.stub(:get_top_rated).and_return([@ten_rating_contribution, @five_rating_contribution, @one_rating_contribution])
-
-  end
-
-  it "should merge all rateable types" do
-    result = TopItem.highest_rated
-    items = result.collect{ |ti| ti.item }
-
-    items.include?(@ten_rating_conversation).should == true
-    items.include?(@ten_rating_contribution).should == true
-    items.include?(@ten_rating_issue).should == true
-  end
-
-  it "should return the number passed in" do
-    result = TopItem.highest_rated(5).all.count
-    result.should == 5
-  end
-
-  it "should return 10 items if no limit is passed in" do
-    result = TopItem.highest_rated.all.count
-    result.should == 10
-  end
-end
-
 describe TopItem, "when retrieving the top items by number of visits" do
   before(:each) do
     @ten_visit_conversation = Factory.create(:conversation, {:recent_visits=>10})
