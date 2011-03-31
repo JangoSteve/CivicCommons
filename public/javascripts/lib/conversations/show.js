@@ -288,14 +288,14 @@
 
   $('.collapsed .comment p, .uncollapsed .comment p')
     .live('click', function(e){
-      var div = $(this).closest('.collapsed, .uncollapsed'),
+      var $div = $(this).closest('.collapsed, .uncollapsed'),
           s = document.documentElement.style;
 
       if (!('textOverflow' in s || 'OTextOverflow' in s)) {
         var newDiv = div.clone().toggleClass('collapsed uncollapsed');
-        div.replaceWith(newDiv);
+        $div.replaceWith(newDiv);
       } else {
-        $div.toggleClass('collapsed');
+        $div.toggleClass('collapsed uncollapsed');
       }
       e.stopPropagation(); // needed to prevent repeated firing since '.collapsed .comment' are nested
   });
