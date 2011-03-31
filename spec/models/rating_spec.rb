@@ -74,10 +74,3 @@ describe Rating do
 
 end
 
-
-
-
-
-
-
-

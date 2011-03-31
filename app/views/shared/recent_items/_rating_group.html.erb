@@ -1,0 +1,13 @@
+<p>
+  <%= person_display_name( rating_group.person ) %> rated a response as <i><%= rating_group.ratings_titles.to_sentence %></i>:
+</p>
+
+<blockquote>
+  <%= simple_format( truncate( rating_group.contribution.content, :length => 100, :separator => ' ' ) ) %>
+</blockquote>
+
+<% unless controller.action_name == 'show' %>
+  <span class="posted">
+    <%= link_to( rating_group.conversation.title, conversation_path(rating_group.conversation)) %>
+  </span>
+<% end %>
