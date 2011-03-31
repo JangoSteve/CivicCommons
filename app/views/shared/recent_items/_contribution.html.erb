@@ -21,7 +21,7 @@
     Posted on:
     <%= link_to( contribution.issue.name, issue_node_path( contribution ) ) %>
   </span>
-<% elsif contribution.conversation %>
+<% elsif contribution.conversation && controller.action_name != 'show' %>
   <span class="posted">
     Posted on:
     <%= link_to( contribution.conversation.title, conversation_node_path( contribution ) ) %>

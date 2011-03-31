@@ -2,10 +2,14 @@ class Rating < ActiveRecord::Base
   include TopItemable
 
   belongs_to :person # who made this rating
+  belongs_to :conversation
   belongs_to :contribution
   belongs_to :rating_descriptor
 
+  before_create :set_conversation_id
+
   delegate :title, :to => :rating_descriptor
+  delegate :name, :to => :person
 
   scope :group_by_contribution, lambda { |contribution|
     joins(:rating_descriptor).
@@ -17,6 +21,10 @@ class Rating < ActiveRecord::Base
     joins(:rating_descriptor).
     group('rating_descriptors.title')
   }
+
+  def set_conversation_id
+    self.conversation_id = contribution.conversation_id if conversation_id.blank?
+  end
 
   def self.by_all_contributions
     group_by_rating_descriptor.count
