@@ -300,6 +300,21 @@
       e.stopPropagation(); // needed to prevent repeated firing since '.collapsed .comment' are nested
   });
 
+  var collapsedStyle = 'div.contribution-container.collapsed > .comment > .content p {';
+  collapsedStyle += 'white-space: nowrap;';
+  collapsedStyle += 'overflow: hidden;';
+  collapsedStyle += 'text-overflow: ellipsis;';
+  collapsedStyle += '-o-text-overflow: ellipsis;';
+  collapsedStyle += '-moz-binding: url(\'/stylesheets/ellipsis.xml#ellipsis\');';
+  collapsedStyle += 'cursor: pointer;';
+  collapsedStyle += 'width: auto;';
+  collapsedStyle += '}';
+  collapsedStyle += 'div.contribution-container.uncollapsed .comment {';
+  collapsedStyle += 'cursor: pointer;';
+  collapsedStyle += '}';
+  // By the time this file is included, the head element already exists in the DOM
+  $("<style type='text/css'>" + collapsedStyle + "</style>").appendTo("head");
+
   $(document).ready(function() {
 
     selectResponseFromHash();

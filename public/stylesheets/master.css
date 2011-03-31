@@ -871,6 +871,7 @@ width: 150px;
 .comment {
 padding-bottom: 0;
 }
+/* These styles are added via JS in javascripts/lib/conversations/show.js:
 div.contribution-container.collapsed > .comment > .content p {
 white-space: nowrap;
 overflow: hidden;
@@ -883,6 +884,7 @@ width: auto;
 div.contribution-container.uncollapsed .comment {
 cursor: pointer;
 }
+*/
 div.contribution-container.collapsed div.callout {
 width: 20px;
 }
