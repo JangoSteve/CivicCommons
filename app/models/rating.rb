@@ -10,13 +10,13 @@ class Rating < ActiveRecord::Base
   delegate :name, :to => :person
 
   scope :group_by_contribution, lambda { |contribution|
-    joins(:rating_descriptor).
+    joins(:rating_descriptor).joins(:rating_group)
     where(:contribution_id => contribution).
     group('rating_descriptors.title')
   }
 
   scope :group_by_rating_descriptor, lambda {
-    joins(:rating_descriptor).
+    joins(:rating_descriptor).joins(:rating_group)
     group('rating_descriptors.title')
   }
 

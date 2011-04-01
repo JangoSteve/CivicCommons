@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-[Contribution, Issue, Conversation, Rating].each do |model_type|
+[Contribution, Issue, Conversation, RatingGroup].each do |model_type|
   describe model_type.to_s, "When working with top items" do
     before(:each) do
       @person = Factory.create(:normal_person)
