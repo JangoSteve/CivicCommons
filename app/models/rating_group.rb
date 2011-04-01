@@ -11,6 +11,14 @@ class RatingGroup < ActiveRecord::Base
 
   validates_uniqueness_of :person_id, :scope => :contribution_id
 
+  scope :group_by_contribution, lambda { |contribution|
+    joins(:rating_descriptor).joins(:rating_group).
+    where(:contribution_id => contribution).
+    group('rating_descriptors.title')
+  }
+
+
+
   def set_conversation_id
     self.conversation_id = contribution.conversation_id if conversation_id.blank?
   end
@@ -23,4 +31,9 @@ class RatingGroup < ActiveRecord::Base
   def ratings_titles
     self.ratings.collect(&:title)#.to_sentance
   end
+
+
+
+
+
 end
