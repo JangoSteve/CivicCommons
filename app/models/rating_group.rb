@@ -47,4 +47,25 @@ class RatingGroup < ActiveRecord::Base
     rgs.collect{|rg| rg.ratings}.flatten.group_by(&:title)
   end
 
+  def self.ratings_for_conversation_with_count(conversation)
+    rgs = ratings_for_conversation(conversation)
+    rgs.keys.each{|rg_key| rgs[rg_key] = rgs[rg_key].count}
+    rgs
+  end
+
+  def self.ratings_for_conversation_by_contribution_with_count(conversation)
+    # First get the Rating Group that is associated with each Contribution
+    #   Contribution_id => [Rating Group(s)]
+    contribs = RatingGroup.where(:conversation_id => conversation).includes(:ratings).group_by(&:contribution_id)
+
+    # Next, map the ratings (from the resulting ratings groups) into the Rating Descriptor
+    #   Contribution_id => [RatingDescriptor => [Rating, Rating]
+    contribs.keys.each{|contrib| contribs[contrib] = contribs[contrib].collect{|rg| rg.ratings}.flatten.group_by(&:title) }
+
+    # and finally, get the count for each rating for a given Rating Descriptor
+    #   Contribution_id => [RatingDescriptor => 2]
+    contribs.keys.each{|contrib| contribs[contrib].keys.each{|descriptor| contribs[contrib][descriptor] = contribs[contrib][descriptor].size } }
+
+    contribs
+  end
 end

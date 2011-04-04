@@ -18,6 +18,25 @@ describe RatingGroup do
                         @descriptor.title => [@rating],
                         @descriptor2.title => [@rating2]
                       }
-    RatingGroup.ratings_for_conversation(@conversation).should == expected_result
+    rgs = RatingGroup.ratings_for_conversation(@conversation)
+    rgs.should == expected_result
+  end
+
+  it "returns all of the ratings for a conversation with counts" do
+    expected_result = {
+                        @descriptor.title => 1,
+                        @descriptor2.title => 1
+                      }
+    rgs = RatingGroup.ratings_for_conversation_with_count(@conversation)
+    rgs.should == expected_result
+  end
+
+  it "returns all of the ratings for a conversation by contribution with counts" do
+    expected_result = { @contribution.id => { @descriptor.title => 1,
+                                              @descriptor2.title => 1
+                                            }
+                      }
+    rgs = RatingGroup.ratings_for_conversation_by_contribution_with_count(@conversation)
+    rgs.should == expected_result
   end
 end
