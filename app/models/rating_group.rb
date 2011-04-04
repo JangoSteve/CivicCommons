@@ -30,6 +30,17 @@ class RatingGroup < ActiveRecord::Base
     self.ratings.collect(&:title)#.to_sentance
   end
 
+
+  # Potential Direct SQL Query:
+  #   SELECT RG.CONTRIBUTION_ID, RD.TITLE, COUNT(*)
+  #     FROM RATING_GROUPS AS RG,
+  #          RATINGS AS R,
+  #          RATING_DESCRIPTORS AS RD
+  #    WHERE RG.CONVERSATION_ID = 120
+  #      AND RG.ID = R.RATING_GROUP_ID
+  #      AND R.`RATING_DESCRIPTOR_ID` = RD.ID
+  # GROUP BY CONTRIBUTION_ID,
+  #          RATING_DESCRIPTOR_ID
   def self.ratings_for_conversation(conversation)
     rgs = RatingGroup.where(:conversation_id => conversation).includes(:ratings)
 
