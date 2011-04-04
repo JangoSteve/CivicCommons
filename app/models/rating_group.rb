@@ -17,8 +17,6 @@ class RatingGroup < ActiveRecord::Base
     group('rating_descriptors.title')
   }
 
-
-
   def set_conversation_id
     self.conversation_id = contribution.conversation_id if conversation_id.blank?
   end
@@ -32,8 +30,10 @@ class RatingGroup < ActiveRecord::Base
     self.ratings.collect(&:title)#.to_sentance
   end
 
+  def self.ratings_for_conversation(conversation)
+    rgs = RatingGroup.where(:conversation_id => conversation).includes(:ratings)
 
-
-
+    rgs.collect{|rg| rg.ratings}.flatten.group_by(&:title)
+  end
 
 end
