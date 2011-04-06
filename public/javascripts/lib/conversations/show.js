@@ -292,7 +292,7 @@
           s = document.documentElement.style;
 
       if (!('textOverflow' in s || 'OTextOverflow' in s)) {
-        var newDiv = div.clone().toggleClass('collapsed uncollapsed');
+        var newDiv = $div.clone().toggleClass('collapsed uncollapsed');
         $div.replaceWith(newDiv);
       } else {
         $div.toggleClass('collapsed uncollapsed');
