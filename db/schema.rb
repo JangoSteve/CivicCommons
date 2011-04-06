@@ -234,6 +234,13 @@ ActiveRecord::Schema.define(:version => 20110331202532) do
 
   add_index "subscriptions", ["person_id", "subscribable_type", "subscribable_id"], :name => "unique-subs", :unique => true
 
+  create_table "test_comments", :force => true do |t|
+    t.string   "subject"
+    t.text     "body"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "top_items", :force => true do |t|
     t.integer  "item_id"
     t.string   "item_type"

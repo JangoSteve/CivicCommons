@@ -26,6 +26,12 @@ class ConversationsController < ApplicationController
     @conversation = Conversation.includes(:issues).find(params[:id])
     @conversation.visit!((current_person.nil? ? nil : current_person.id))
     @contributions = Contribution.for_conversation(@conversation)
+    @ratings = RatingGroup.ratings_for_conversation_by_contribution_with_count(@conversation, current_person)
+    # Build rating totals into contribution
+    # @contributions.each do |c|
+    #   c.ratings       #=> {'some-descriptor' => {:total => 5, :person => true}, 'some-other' => 0, 'and-again' => 1}
+    # end
+
     @top_level_contributions = @contributions.select{ |c| c.is_a?(TopLevelContribution) }
     # grab all direct contributions to conversation that aren't TLC
     @conversation_contributions = @contributions.select{ |c| !c.is_a?(TopLevelContribution) && c.parent_id.nil? }

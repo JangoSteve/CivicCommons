@@ -54,20 +54,36 @@ class RatingGroup < ActiveRecord::Base
   end
 
   def self.ratings_for_conversation_by_contribution_with_count(conversation, person=nil)
+    person = person.is_a?(Person) ? person.id : person
     # First get the Rating Group that is associated with each Contribution
     #   Contribution_id => [Rating Group(s)]
-    contribs = RatingGroup.scoped
-    contribs = contribs.where(:person_id => person) if person
-    contribs = contribs.where(:conversation_id => conversation).includes(:ratings).group_by(&:contribution_id)
+    rgs       = RatingGroup.scoped
+    rgs       = rgs.where(:conversation_id => conversation).includes(:ratings).all
+    contribution_ids = rgs.collect(&:contribution_id).uniq
+    ratings = rgs.collect(&:ratings)
 
-    # Next, map the ratings (from the resulting ratings groups) into the Rating Descriptor
-    #   Contribution_id => [RatingDescriptor => [Rating, Rating]
-    contribs.keys.each{|contrib| contribs[contrib] = contribs[contrib].collect{|rg| rg.ratings}.flatten.group_by(&:title) }
+    # Start with new Hash #=> {}
+    out = contribution_ids.each.inject(Hash.new) do |h, contribution_id|
+      contribution_rgs = rgs.select{ |rg| rg.contribution_id == contribution_id }
+      contribution_person_ratings = contribution_rgs.select{ |rg| rg.person_id == person }.collect(&:ratings).flatten if person
+      # Populate hash with each unique contribution_id as a key #=> { 1 => {}, 2 => {} }
+      contribution_hash = returning Hash.new do |h2|
+        # Populate each contribution_id value hash with rating_descriptor keys
+        # e.g. { 1 => { 'some-descriptor' => ... }, 2 => { 'some-descriptor' => ... } }
+        RatingGroup.rating_descriptors.each do |rd_id, rd_title|
+          # Populate each rating_descriptor value with hash of total and person ratings
+          h2[rd_title] = {
+            :total => contribution_rgs.collect(&:ratings).flatten.count{|r| r.rating_descriptor_id == rd_id },
+            :person => person ? contribution_person_ratings.any?{ |r| r.rating_descriptor_id == rd_id } : nil
+          }
+        end
+      end
+      h.merge(contribution_id => contribution_hash)
+    end
+  end
 
-    # and finally, get the count for each rating for a given Rating Descriptor
-    #   Contribution_id => [RatingDescriptor => 2]
-    contribs.keys.each{|contrib| contribs[contrib].keys.each{|descriptor| contribs[contrib][descriptor] = contribs[contrib][descriptor].size } }
-
-    contribs
+  def self.rating_descriptors
+    # Builds { 1 => 'Appropriate', 2 => 'Inspiring', ... }
+    @rating_desciptors ||= Hash[*RatingDescriptor.select([ :id, :title ]).map{ |m| [m.id, m.title]}.flatten]
   end
 end
