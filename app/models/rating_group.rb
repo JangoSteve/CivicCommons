@@ -53,10 +53,12 @@ class RatingGroup < ActiveRecord::Base
     rgs
   end
 
-  def self.ratings_for_conversation_by_contribution_with_count(conversation)
+  def self.ratings_for_conversation_by_contribution_with_count(conversation, person=nil)
     # First get the Rating Group that is associated with each Contribution
     #   Contribution_id => [Rating Group(s)]
-    contribs = RatingGroup.where(:conversation_id => conversation).includes(:ratings).group_by(&:contribution_id)
+    contribs = RatingGroup.scoped
+    contribs = contribs.where(:person_id => person) if person
+    contribs = contribs.where(:conversation_id => conversation).includes(:ratings).group_by(&:contribution_id)
 
     # Next, map the ratings (from the resulting ratings groups) into the Rating Descriptor
     #   Contribution_id => [RatingDescriptor => [Rating, Rating]
