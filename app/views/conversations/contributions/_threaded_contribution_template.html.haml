@@ -16,8 +16,8 @@
         = render(:partial => "conversations/contributions/#{contribution.type.underscore}", :locals => {:contribution => contribution})
         - if contribution.confirmed # if not confirmed, this is just a preview
           %div{:class => "convo-utility #{contribution.descendants_count > 0 ? 'response' : 'no-response'}"}
-            .ratings
             .respond-container
+              = rating_buttons(contribution, @ratings)
               %span.respond
                 = link_to("Respond#{' to ' + contribution.person.first_name if contribution.person}", {:action => "new_node_contribution", :contribution_id => contribution.id, :id => contribution.conversation_id, :div_id => "contribution-#{contribution.id}"}, :class => "text conversation-action rating-button", :id => "action-link-#{contribution.id}", :title => "Leave a comment here", 'data-target' => "#action-div-#{contribution.id}")
           %ol.conversations.divided.thread-list

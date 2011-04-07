@@ -44,12 +44,15 @@ class RatingGroup < ActiveRecord::Base
   def self.ratings_for_conversation(conversation)
     rgs = RatingGroup.where(:conversation_id => conversation).includes(:ratings)
 
-    rgs.collect{|rg| rg.ratings}.flatten.group_by(&:title)
+    returning Hash.new do |hash|
+      RatingGroup.rating_descriptors.values.collect{ |rd_title| hash[rd_title] = [] }
+    end.merge( rgs.collect{|rg| rg.ratings}.flatten.group_by(&:title) )
   end
 
   def self.ratings_for_conversation_with_count(conversation)
     rgs = ratings_for_conversation(conversation)
-    rgs.keys.each{|rg_key| rgs[rg_key] = rgs[rg_key].count}
+
+    RatingGroup.rating_descriptors.values.each{|rd_title| rgs[rd_title] = rgs[rd_title].count}
     rgs
   end
 
@@ -62,8 +65,21 @@ class RatingGroup < ActiveRecord::Base
     contribution_ids = rgs.collect(&:contribution_id).uniq
     ratings = rgs.collect(&:ratings)
 
+    default_ratings_hash = returning Hash.new do |hash|
+      RatingGroup.rating_descriptors.each do |rd_id, rd_title|
+        hash[rd_title] = {
+          :total => 0,
+          :person => false
+        }
+      end
+    end
+
+    default_contribution_hash = Hash.new do |hash, key|
+      hash[key] = default_ratings_hash
+    end
+
     # Start with new Hash #=> {}
-    out = contribution_ids.each.inject(Hash.new) do |h, contribution_id|
+    out = contribution_ids.each.inject(default_contribution_hash) do |h, contribution_id|
       contribution_rgs = rgs.select{ |rg| rg.contribution_id == contribution_id }
       contribution_person_ratings = contribution_rgs.select{ |rg| rg.person_id == person }.collect(&:ratings).flatten if person
       # Populate hash with each unique contribution_id as a key #=> { 1 => {}, 2 => {} }

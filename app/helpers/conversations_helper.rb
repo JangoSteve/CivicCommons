@@ -114,4 +114,12 @@ module ConversationsHelper
       "These are the conversations that match your filter."
     end
   end
+
+  def rating_buttons(contribution, ratings_hash)
+    out = []
+    RatingGroup.rating_descriptors.each do |id, title|
+      out << link_to( "#{title} <span>#{ratings_hash[contribution.id][title][:total]}</span>".html_safe, "#", :class => "rating-button #{'active' if ratings_hash[contribution.id][title][:person]}" )
+    end
+    raw(out.join(' '))
+  end
 end

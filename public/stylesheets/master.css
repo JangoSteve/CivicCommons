@@ -994,7 +994,7 @@ a.rating-button {
 	text-shadow:1px 1px 0px #ffffff;
 }
 
-a.rating-button:hover {
+a.rating-button:hover, a.rating-button.active {
 	-moz-box-shadow:inset 0px 1px 0px 0px #dfdfdf;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #dfdfdf;
 	box-shadow:inset 0px 1px 0px 0px #dfdfdf;
@@ -1012,6 +1012,7 @@ a.rating-button:active {
 }
 
 a.rating-button span {
+  display: inline-block;
 	color:#9cb050;
 	margin: 0 -5px 0 5px;
 	background: #ffffff;
