@@ -31,6 +31,7 @@ Civiccommons::Application.routes.draw do
   put '/conversations/update_node_contribution',       to: 'conversations#update_node_contribution'
   put '/conversations/confirm_node_contribution',      to: 'conversations#confirm_node_contribution'
   get '/conversations/responsibilities',               to: 'conversations#responsibilities',                 as: 'conversation_responsibilities'
+  post '/conversations/toggle_rating',                 to: 'conversations#toggle_rating',                    as: 'conversation_contribution_toggle_rating'
   #Subscriptions
   post '/subscriptions/subscribe',                     to: 'subscriptions#subscribe'
   post '/subscriptions/unsubscribe',                   to: 'subscriptions#unsubscribe'

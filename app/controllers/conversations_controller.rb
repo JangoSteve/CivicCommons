@@ -1,5 +1,5 @@
 class ConversationsController < ApplicationController
-  before_filter :require_user, :only=>[:new, :create, :new_node_contribution, :preview_node_contribution, :confirm_node_contribution]
+  before_filter :require_user, :only=>[:new, :create, :new_node_contribution, :preview_node_contribution, :confirm_node_contribution, :toggle_rating]
 
   # GET /conversations
   def index
@@ -167,8 +167,8 @@ class ConversationsController < ApplicationController
   end
 
   def toggle_rating
-    @contribution = Contribution.find(params[:contribution][:id])
-    @rating_descriptor = RatingDescriptor.find_by_title(params[:contribution][:rating_descriptor])
+    @contribution = Contribution.find(params[:contribution_id])
+    @rating_descriptor = RatingDescriptor.find_by_title(params[:rating_descriptor_title])
 
     RatingGroup.toggle_rating!(current_person, @contribution, @rating_descriptor)
     respond_to do |format|

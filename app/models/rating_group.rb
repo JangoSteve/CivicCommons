@@ -36,7 +36,7 @@ class RatingGroup < ActiveRecord::Base
 
   def self.toggle_rating!(person, contribution, descriptor)
     rg = RatingGroup.includes(:ratings).find_by_person_id_and_contribution_id(person.id, contribution.id)
-    self.send( ( rg && rg.ratings.first ? :remove_rating! : :add_rating! ), person, contribution, descriptor)
+    self.send( ( rg && rg.ratings.detect{|r| r.rating_descriptor_id == descriptor.id} ? :remove_rating! : :add_rating! ), person, contribution, descriptor)
   end
 
   def ratings_titles

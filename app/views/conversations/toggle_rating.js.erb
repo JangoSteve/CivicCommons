@@ -1,0 +1,16 @@
+var $button = $('#contribution-<%= @contribution.id %>-rating-<%= @rating_descriptor.title %>');
+<% unless @rating_descriptor.errors.any? %>
+  var $buttonSpan = $button.children('span');
+  // if 'active', decrement number in button
+  if( $button.hasClass('active') ) {
+    $buttonSpan.text(parseInt($buttonSpan.text()) - 1)
+  // else increment number
+  } else {
+    $buttonSpan.text(parseInt($buttonSpan.text()) + 1)
+  }
+  // toggle 'active' class
+  $button.toggleClass('active');
+<% else %>
+  // popup error message
+  alert('There was an error!');
+<% end %>

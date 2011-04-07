@@ -85,6 +85,7 @@ describe RatingGroup do
       end
 
       it "adds rating if it does not already exist" do
+        add_rating(@descriptor2)
         RatingGroup.should_receive(:add_rating!).with(@current_person, @contribution, @descriptor)
         toggle_rating
       end
