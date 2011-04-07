@@ -166,15 +166,13 @@ class ConversationsController < ApplicationController
     end
   end
 
-  def rate_contribution
+  def toggle_rating
     @contribution = Contribution.find(params[:contribution][:id])
-    rating = params[:contribution][:rating]
+    @rating_descriptor = RatingDescriptor.find_by_title(params[:contribution][:rating_descriptor])
 
+    RatingGroup.toggle_rating!(current_person, @contribution, @rating_descriptor)
     respond_to do |format|
-      if @contribution.rate!(rating.to_i, current_person)
-        format.js { render(:partial => 'conversations/contributions/rating', :locals => {:contribution => @contribution}, :layout => false, :status => :created) }
-      end
-        format.js { render :json => @contribution.errors[:rating].first, :status => :unprocessable_entity }
+      format.js
     end
   end
 

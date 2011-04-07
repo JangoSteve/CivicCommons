@@ -21,9 +21,22 @@ class RatingGroup < ActiveRecord::Base
     self.conversation_id = contribution.conversation_id if conversation_id.blank?
   end
 
-  def self.add_rating!(person, contribution, descriptor)
-    rg = RatingGroup.find_or_create_by_person_id_and_contribution_id(person.id, contribution.id)
+  def self.add_rating!(person, contribution, descriptor, rg=nil)
+    rg ||= RatingGroup.find_or_create_by_person_id_and_contribution_id(person.id, contribution.id)
     rg.ratings.create(:rating_descriptor => descriptor)
+  end
+
+  def self.remove_rating!(person, contribution, descriptor, rg=nil)
+    rg ||= RatingGroup.includes(:ratings).find_by_person_id_and_contribution_id(person.id, contribution.id)
+    self.transaction do
+      rating = rg.ratings.detect{|r| r.rating_descriptor_id == descriptor.id}
+      rating && rg.ratings.size == 1 ? rg.destroy : rating.destroy
+    end
+  end
+
+  def self.toggle_rating!(person, contribution, descriptor)
+    rg = RatingGroup.includes(:ratings).find_by_person_id_and_contribution_id(person.id, contribution.id)
+    self.send( ( rg && rg.ratings.first ? :remove_rating! : :add_rating! ), person, contribution, descriptor)
   end
 
   def ratings_titles
@@ -69,7 +82,7 @@ class RatingGroup < ActiveRecord::Base
       RatingGroup.rating_descriptors.each do |rd_id, rd_title|
         hash[rd_title] = {
           :total => 0,
-          :person => false
+          :person => person ? false : nil
         }
       end
     end
@@ -100,6 +113,6 @@ class RatingGroup < ActiveRecord::Base
 
   def self.rating_descriptors
     # Builds { 1 => 'Appropriate', 2 => 'Inspiring', ... }
-    @rating_desciptors ||= Hash[*RatingDescriptor.select([ :id, :title ]).map{ |m| [m.id, m.title]}.flatten]
+    @rating_desciptors = Hash[*RatingDescriptor.select([ :id, :title ]).map{ |m| [m.id, m.title]}.flatten]
   end
 end
