@@ -1,6 +1,6 @@
 var $button = $('#contribution-<%= @contribution.id %>-rating-<%= @rating_descriptor.title %>');
 <% unless @rating_descriptor.errors.any? %>
-  var $buttonSpan = $button.children('span');
+  var $buttonSpan = $button.children('span.number');
   // if 'active', decrement number in button
   if( $button.hasClass('active') ) {
     $buttonSpan.text(parseInt($buttonSpan.text()) - 1)

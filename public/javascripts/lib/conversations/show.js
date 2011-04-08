@@ -319,6 +319,14 @@
 
     selectResponseFromHash();
 
+    $('.rating-button')
+      .live('ajax:before', function(){
+        $(this).children('.loading').show();
+      })
+      .live('ajax:complete', function(){
+        $(this).children('.loading').hide();
+      });
+
   });
 
 })(jQuery);

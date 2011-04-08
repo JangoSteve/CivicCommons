@@ -1011,7 +1011,7 @@ a.rating-button:active {
 	top:1px;
 }
 
-a.rating-button span {
+a.rating-button span.number {
   display: inline-block;
 	color:#9cb050;
 	margin: 0 -5px 0 5px;
@@ -1021,6 +1021,14 @@ a.rating-button span {
 	border-radius:2px;
 	padding: 1px 3px;
 	text-shadow:1px 1px 0px #dfdfdf;
+}
+
+a.rating-button span.loading {
+  display: none;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+  line-height: 0;
 }
 
 /* Conversation Ticker */
